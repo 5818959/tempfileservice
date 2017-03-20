@@ -69,13 +69,16 @@ done
 
 echo ""
 
+
+echo "${FILES}"
+
 # Run phpspec
 
 if [ "$FILES" != "" ]
 then
     echo "${BLUE}Running PHPSpec..."
     echo "${BLUE}-------------------------------${NC}"
-    ./vendor/bin/phpspec run $FILES
+    ./vendor/bin/phpspec run
     if [ $? != 0 ]
     then
         echo "${RED}**********************************"
@@ -93,7 +96,7 @@ if [ "$FILES" != "" ]
 then
     echo "${BLUE}Running php-cs-fixer..."
     echo "${BLUE}-------------------------------${NC}"
-    ./vendor/bin/php-cs-fixer fix --verbose $FILES
+    ./vendor/bin/php-cs-fixer fix --verbose
     git add $FILES
 fi
 
@@ -105,7 +108,7 @@ if [ "$FILES" != "" ]
 then
     echo "${BLUE}Running Code Sniffer..."
     echo "${BLUE}-------------------------------${NC}"
-    ./vendor/bin/phpcs $FILES
+    ./vendor/bin/phpcs
     if [ $? != 0 ]
     then
         echo "${RED}**********************************"
@@ -138,7 +141,7 @@ if [ "$FILES" != "" ]
 then
     echo "${BLUE}Running PHPCPD..."
     echo "${BLUE}-------------------------------${NC}"
-    ./vendor/bin/phpcpd --exclude=vendor/ --progress $FILES
+    ./vendor/bin/phpcpd --exclude=vendor/ --progress ./
     if [ $? != 0 ]
     then
         echo "${RED}**********************************"
@@ -156,7 +159,7 @@ if [ "$FILES" != "" ]
 then
     echo "${BLUE}Running PHPMD..."
     echo "${BLUE}-------------------------------"
-    ./vendor/bin/phpmd $FILES text phpmd.xml.dist
+    ./vendor/bin/phpmd ./ text phpmd.xml.dist
     if [ $? != 0 ]
     then
         echo "${RED}**********************************"
