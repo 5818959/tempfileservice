@@ -1,0 +1,11 @@
+# vendor
+/vendor/*
+
+# config
+/app/config.php
+
+# tmp folder
+/tmp/*
+
+# php-cs-fixer cache
+/.php_cs.cache

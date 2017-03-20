@@ -1,0 +1,4 @@
+suites:
+    cryptcpservice_suite:
+        namespace: TempFileService
+        psr4_prefix: TempFileService
