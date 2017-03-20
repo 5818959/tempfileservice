@@ -89,10 +89,17 @@ class TempFile
      * Read data from file.
      *
      * @return string File content
+     *
+     * @throws \RuntimeException Can't read from a temp file
      */
     public function read()
     {
-        return file_get_contents($this->getPath());
+        $data = file_get_contents($this->getPath());
+        if ($data !== false) {
+            return $data;
+        }
+
+        throw new \RuntimeException('Can\'t read from a temp file.');
     }
 
     /**
