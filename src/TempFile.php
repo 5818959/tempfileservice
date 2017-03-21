@@ -74,7 +74,7 @@ class TempFile
      *
      * @return boolean Returns TRUE on success or FALSE on failure
      *
-     * @throws \RuntimeException Can't create a temp file
+     * @throws WriteTempFileException Can't create a temp file
      */
     public function write($data)
     {
@@ -82,7 +82,7 @@ class TempFile
             return true;
         }
 
-        throw new \RuntimeException('Can\'t write to a temp file.');
+        throw new WriteTempFileException('Can\'t write to a temp file.');
     }
 
     /**
@@ -90,7 +90,7 @@ class TempFile
      *
      * @return string File content
      *
-     * @throws \RuntimeException Can't read from a temp file
+     * @throws ReadTempFileException Can't read from a temp file
      */
     public function read()
     {
@@ -99,7 +99,7 @@ class TempFile
             return $data;
         }
 
-        throw new \RuntimeException('Can\'t read from a temp file.');
+        throw new ReadTempFileException('Can\'t read from a temp file.');
     }
 
     /**
@@ -119,14 +119,14 @@ class TempFile
      *
      * @return string Full path to file, including its name
      *
-     * @throws \RuntimeException Can't create a temp file
+     * @throws CreateTempFileException Can't create a temp file
      */
     private function createFile($dir)
     {
         $file = tempnam($dir, '');
 
         if (!file_exists($file)) {
-            throw new \RuntimeException('Can\'t create a temp file.');
+            throw new CreateTempFileException('Can\'t create a temp file.');
         }
 
         return $file;
@@ -137,7 +137,7 @@ class TempFile
      *
      * @return boolean Returns TRUE on success or FALSE on failure
      *
-     * @throws \RuntimeException Can't destroy a temp file
+     * @throws DestroyTempFileException Can't destroy a temp file
      */
     private function destroyFile()
     {
@@ -145,6 +145,6 @@ class TempFile
             return true;
         }
 
-        throw new \RuntimeException('Can\'t destroy a temp file.');
+        throw new DestroyTempFileException('Can\'t destroy a temp file.');
     }
 }

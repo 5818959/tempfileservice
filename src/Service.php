@@ -13,13 +13,19 @@ class Service
      * @param string $content Content to write to file
      *
      * @return TempFile Returns new temp file
+     *
+     * @throws Exception Can't get a temp file
      */
     public static function create($content = '')
     {
-        $file = new TempFile();
+        try {
+            $file = new TempFile();
 
-        if (!empty($content)) {
-            $file->write($content);
+            if (!empty($content)) {
+                $file->write($content);
+            }
+        } catch (TempFileException $e) {
+            throw new Exception($e->getMessage());
         }
 
         return $file;
