@@ -28,7 +28,7 @@ PROJECT=`php -r "echo dirname(realpath('$0'));"`
 CHANGED_FILES_CMD=`git status --porcelain | sed s/^...// | grep \\\\.php`
 
 phplint_command="php -l -d display_errors=0"
-phpcsfixer_vendor_command="./vendor/bin/php-cs-fixer fix --config .php_cs.dist --verbose"
+phpcsfixer_vendor_command="./vendor/bin/php-cs-fixer fix --path-mode intersection --config .php_cs.dist --verbose"
 phpcs_vendor_command="./vendor/bin/phpcs"
 phpmd_vendor_command="./vendor/bin/phpmd ./ text phpmd.xml.dist"
 phpcpd_vendor_command="./vendor/bin/phpcpd --exclude=vendor/ --progress ./"
