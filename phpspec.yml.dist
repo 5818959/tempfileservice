@@ -1,4 +1,6 @@
+formatter.name: pretty
+
 suites:
-    cryptcpservice_suite:
+    tempfileservice_suite:
         namespace: TempFileService
         psr4_prefix: TempFileService
