@@ -4,13 +4,18 @@ namespace TempFileService;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+function dumpTempFileStat(TempFile $tempFile)
+{
+    echo 'Temp file name: ' . $tempFile->getName() . PHP_EOL;
+    echo 'Temp file dir: ' . $tempFile->getDir() . PHP_EOL;
+    echo 'Temp file path: ' . $tempFile->getPath() . PHP_EOL;
+}
+
 // create a temp file
 
 $tempFile = new TempFile();
 
-echo 'Temp file name: ' . $tempFile->getName() . PHP_EOL;
-echo 'Temp file dir: ' . $tempFile->getDir() . PHP_EOL;
-echo 'Temp file path: ' . $tempFile->getPath() . PHP_EOL;
+dumpTempFileStat($tempFile);
 
 // write some data to it
 
@@ -36,3 +41,13 @@ if ($data = $tempFile->read()) {
 } else {
     echo '  ERROR.' . PHP_EOL;
 }
+
+// destroy temp file
+
+unset($tempFile);
+
+// сreate a temp file in the specified directory (use current directory)
+
+$tempFile = new TempFile(__DIR__);
+
+dumpTempFileStat($tempFile);
