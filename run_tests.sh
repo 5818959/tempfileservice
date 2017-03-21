@@ -25,67 +25,48 @@ WHITE="\033[01;37m"
 NC="\033[00m"
 
 PROJECT=`php -r "echo dirname(realpath('$0'));"`
-STAGED_FILES_CMD=`git diff --cached --name-only --diff-filter=ACMR HEAD | grep \\\\.php`
+CHANGED_FILES_CMD=`git status --porcelain | sed s/^...// | grep \\\\.php`
 
+phplint_command="php -l -d display_errors=0"
+phpcsfixer_vendor_command="./vendor/bin/php-cs-fixer fix --config .php_cs.dist --verbose"
+phpcs_vendor_command="./vendor/bin/phpcs"
+phpmd_vendor_command="./vendor/bin/phpmd ./ text phpmd.xml.dist"
+phpcpd_vendor_command="./vendor/bin/phpcpd --exclude=vendor/ --progress ./"
+phpspec_vendor_command="./vendor/bin/phpspec run"
 
-# echo "${WHITE}******************************************************************************"
-# echo "${WHITE}**                                                                          **"
-# echo "${WHITE}**                    Run tests                                             **"
-# echo "${WHITE}**                                                                          **"
-# echo "${WHITE}******************************************************************************"
-
+tag_only_changed="${PURPLE}(only changed)${NC}"
+tag_whole_project="${CYAN}(whole project)${NC}"
 
 # Determine if a file list is passed
+
 if [ "$#" -eq 1 ]
 then
     oIFS=$IFS
     IFS='
     '
-    SFILES="$1"
+    CFILES="$1"
     IFS=$oIFS
 fi
-SFILES=${SFILES:-$STAGED_FILES_CMD}
- 
-if [ "$SFILES" == "" ]
-then
-    echo "${YELLOW}No changes."
-    exit 0
-fi
+CFILES=${CFILES:-$CHANGED_FILES_CMD}
 
 # Run php lint
 
-echo "${BLUE}Checking PHP Lint..."
-echo "${BLUE}-------------------------------${NC}"
-for FILE in $SFILES
-do
-    php -l -d display_errors=0 $PROJECT/$FILE
-    if [ $? != 0 ]
-    then
-        echo "${RED}Fix the error before commit."
-        exit 1
-    fi
-    FILES="$FILES $PROJECT/$FILE"
-done
-
-echo ""
-
-
-echo "${FILES}"
-
-# Run phpspec
-
-if [ "$FILES" != "" ]
+if [ "$CFILES" != "" ]
 then
-    echo "${BLUE}Running PHPSpec..."
+    echo "${BLUE}Checking PHP Lint... ${tag_only_changed}"
     echo "${BLUE}-------------------------------${NC}"
-    ./vendor/bin/phpspec run
-    if [ $? != 0 ]
-    then
-        echo "${RED}**********************************"
-        echo "${RED}*  Fix the error before commit.  *"
-        echo "${RED}**********************************"
-        exit 1
-    fi
+    for FILE in $CFILES
+    do
+        $phplint_command $PROJECT/$FILE
+        if [ $? != 0 ]
+        then
+            echo "${RED}********************"
+            echo "${RED}*  Fix the error.  *"
+            echo "${RED}********************"
+            exit 1
+        fi
+        FILES="$FILES $PROJECT/$FILE"
+    done
 fi
 
 echo ""
@@ -94,10 +75,9 @@ echo ""
 
 if [ "$FILES" != "" ]
 then
-    echo "${BLUE}Running php-cs-fixer..."
+    echo "${BLUE}Running php-cs-fixer... ${tag_only_changed}"
     echo "${BLUE}-------------------------------${NC}"
-    ./vendor/bin/php-cs-fixer fix --verbose
-    git add $FILES
+    $phpcsfixer_vendor_command $FILES
 fi
 
 echo ""
@@ -106,14 +86,14 @@ echo ""
 
 if [ "$FILES" != "" ]
 then
-    echo "${BLUE}Running Code Sniffer..."
+    echo "${BLUE}Running Code Sniffer... ${tag_only_changed}"
     echo "${BLUE}-------------------------------${NC}"
-    ./vendor/bin/phpcs
+    $phpcs_vendor_command $FILES
     if [ $? != 0 ]
     then
-        echo "${RED}**********************************"
-        echo "${RED}*  Fix the error before commit.  *"
-        echo "${RED}**********************************"
+        echo "${RED}********************"
+        echo "${RED}*  Fix the error.  *"
+        echo "${RED}********************"
         exit 1
         # echo "Coding standards errors have been detected. Running phpcbf..."
         # ./bin/phpcbf --standard=PSR2 --encoding=utf-8 -n -p $FILES
@@ -135,38 +115,50 @@ fi
 
 echo ""
 
-# Run PHPCPD
-
+# Run PHPMD
+  
 if [ "$FILES" != "" ]
 then
-    echo "${BLUE}Running PHPCPD..."
-    echo "${BLUE}-------------------------------${NC}"
-    ./vendor/bin/phpcpd --exclude=vendor/ --progress ./
+    echo "${BLUE}Running PHPMD... ${tag_only_changed}"
+    echo "${BLUE}-------------------------------"
+    $phpmd_vendor_command $FILES
     if [ $? != 0 ]
     then
-        echo "${RED}**********************************"
-        echo "${RED}*  Fix the error before commit.  *"
-        echo "${RED}**********************************"
+        echo "${RED}********************"
+        echo "${RED}*  Fix the error.  *"
+        echo "${RED}********************"
         exit 1
     fi
 fi
 
 echo ""
 
-# Run PHPMD
-  
-if [ "$FILES" != "" ]
+# Run PHPCPD
+
+echo "${BLUE}Running PHPCPD... ${tag_whole_project}"
+echo "${BLUE}-------------------------------${NC}"
+$phpcpd_vendor_command
+if [ $? != 0 ]
 then
-    echo "${BLUE}Running PHPMD..."
-    echo "${BLUE}-------------------------------"
-    ./vendor/bin/phpmd ./ text phpmd.xml.dist
-    if [ $? != 0 ]
-    then
-        echo "${RED}**********************************"
-        echo "${RED}*  Fix the error before commit.  *"
-        echo "${RED}**********************************"
-        exit 1
-    fi
+    echo "${RED}********************"
+    echo "${RED}*  Fix the error.  *"
+    echo "${RED}********************"
+    exit 1
+fi
+
+echo ""
+
+# Run phpspec
+
+echo "${BLUE}Running PHPSpec... ${tag_whole_project}"
+echo "${BLUE}-------------------------------${NC}"
+$phpspec_vendor_command
+if [ $? != 0 ]
+then
+    echo "${RED}********************"
+    echo "${RED}*  Fix the error.  *"
+    echo "${RED}********************"
+    exit 1
 fi
 
 echo ""
