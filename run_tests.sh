@@ -37,6 +37,7 @@ phpspec_vendor_command="./vendor/bin/phpspec run"
 tag_only_changed="${PURPLE}(only changed)${NC}"
 tag_whole_project="${CYAN}(whole project)${NC}"
 
+
 # Determine if a file list is passed
 
 if [ "$#" -eq 1 ]
@@ -48,6 +49,7 @@ then
     IFS=$oIFS
 fi
 CFILES=${CFILES:-$CHANGED_FILES_CMD}
+
 
 # Run php lint
 
@@ -67,9 +69,9 @@ then
         fi
         FILES="$FILES $PROJECT/$FILE"
     done
+    echo ""
 fi
 
-echo ""
 
 # Run php-cs-fixer
 
@@ -78,9 +80,9 @@ then
     echo "${BLUE}Running php-cs-fixer... ${tag_only_changed}"
     echo "${BLUE}-------------------------------${NC}"
     $phpcsfixer_vendor_command $FILES
+    echo ""
 fi
 
-echo ""
 
 # Run PHP Code Sniffer
 
@@ -111,9 +113,9 @@ then
         #    exit 1
         # fi
     fi
+    echo ""
 fi
 
-echo ""
 
 # Run PHPMD
   
@@ -129,9 +131,9 @@ then
         echo "${RED}********************"
         exit 1
     fi
+    echo ""
 fi
 
-echo ""
 
 # Run PHPCPD
 
