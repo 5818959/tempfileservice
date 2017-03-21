@@ -50,4 +50,14 @@ class TempFileSpec extends ObjectBehavior
         // running right after temp file was created
         $this->read()->shouldReturn('');
     }
+
+    function it_should_create_a_temp_file_even_if_the_specified_directory_does_not_exist()
+    {
+        $folder = __DIR__ . '/folder_does_not_exist';
+
+        $this->beConstructedWith($folder);
+
+        $this->getDir()->shouldBeString();
+        $this->getName()->shouldBeString();
+    }
 }

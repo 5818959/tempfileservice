@@ -13,8 +13,14 @@ class ServiceSpec extends ObjectBehavior
         $this->shouldHaveType(Service::class);
     }
 
-    function it_can_create_temp_file()
+    function it_can_create_a_temp_file()
     {
-    	self::create()->shouldHaveType('\TempFileService\TempFile');
+        self::create()->shouldHaveType('\TempFileService\TempFile');
+    }
+
+    function it_can_create_a_temp_file_with_content()
+    {
+        $exampleContent = 'some text data';
+        self::create($exampleContent)->shouldHaveType('\TempFileService\TempFile');
     }
 }
