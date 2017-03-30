@@ -1,6 +1,6 @@
 <?php
 
-namespace TempFileService;
+namespace TempFileService\Exception;
 
 /**
  * Read from temp file exception.

@@ -1,6 +1,6 @@
 <?php
 
-namespace TempFileService;
+namespace TempFileService\Exception;
 
 /**
  * Write to a temp file exception.

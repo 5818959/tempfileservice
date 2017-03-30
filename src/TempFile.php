@@ -2,6 +2,11 @@
 
 namespace TempFileService;
 
+use TempFileService\Exception\CreateTempFileException;
+use TempFileService\Exception\WriteTempFileException;
+use TempFileService\Exception\ReadTempFileException;
+use TempFileService\Exception\DestroyTempFileException;
+
 /**
  * Temp file.
  */
@@ -104,8 +109,6 @@ class TempFile
 
     /**
      * Destructor.
-     *
-     * @throws \RuntimeException Can't destroy a temp file
      */
     public function __destruct()
     {

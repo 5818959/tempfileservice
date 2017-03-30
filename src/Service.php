@@ -2,6 +2,8 @@
 
 namespace TempFileService;
 
+use TempFileService\Exception\Exception;
+
 /**
  * Service to create a temp file.
  */
