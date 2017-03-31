@@ -40,3 +40,29 @@ $tempFile = \TempFileService\Service::create(array('name' => $fileName));
 
 echo 'Temp file name is "' . $tempFile->getName() . '" and its '
    . ($tempFile->getName() === $fileName ? '' : 'NOT ') . 'match.' . PHP_EOL;
+echo '---' . PHP_EOL;
+
+unset($tempFile);
+
+$prefix = 'exp_';
+$postfix = '.exp';
+
+echo 'Create a temporary file with specified name prefix (' . $prefix
+   . ') and postfix (' . $postfix . '):' . PHP_EOL;
+
+$tempFile = \TempFileService\Service::create(array(
+    'prefix' => $prefix,
+    'postfix' => $postfix,
+));
+
+$isMatch = false;
+if (substr($tempFile->getName(), 0, strlen($prefix)) == $prefix
+    && substr($tempFile->getName(), -strlen($postfix))
+) {
+    $isMatch = true;
+}
+
+echo 'Temp file name is "' . $tempFile->getName() . '" and its '
+   . ($isMatch ? '' : 'NOT ') . 'match.' . PHP_EOL;
+
+echo '---' . PHP_EOL;

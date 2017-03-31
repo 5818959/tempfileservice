@@ -53,4 +53,44 @@ class ServiceSpec extends ObjectBehavior
         $tmpFile = self::create($options);
         $tmpFile->getName()->shouldBe($fileName);
     }
+
+    function it_can_create_a_temp_file_with_a_name_prefix()
+    {
+        $fileName = uniqid(mt_rand(), true);
+        $fileNamePrefix = 'spec';
+        $options = array(
+            'name' => $fileName,
+            'prefix' => $fileNamePrefix,
+        );
+
+        $tmpFile = self::create($options);
+        $tmpFile->getName()->shouldBe($fileNamePrefix . $fileName);
+    }
+
+    function it_can_create_a_temp_file_with_a_name_postfix()
+    {
+        $fileName = 'spec' . uniqid(mt_rand(), true);
+        $fileNamePostfix = '_a';
+        $options = array(
+            'name' => $fileName,
+            'postfix' => $fileNamePostfix,
+        );
+
+        $tmpFile = self::create($options);
+        $tmpFile->getName()->shouldBe($fileName . $fileNamePostfix);
+    }
+
+    function it_can_create_a_temp_file_with_a_prefix_and_postfix_without_specified_name()
+    {
+        $fileNamePrefix = 'spec';
+        $fileNamePostfix = '.spc';
+        $options = array(
+            'prefix' => $fileNamePrefix,
+            'postfix' => $fileNamePostfix,
+        );
+
+        $tmpFile = self::create($options);
+        $tmpFile->getName()->shouldStartWith($fileNamePrefix);
+        $tmpFile->getName()->shouldEndWith($fileNamePostfix);
+    }
 }
