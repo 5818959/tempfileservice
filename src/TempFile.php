@@ -23,20 +23,24 @@ class TempFile
      *
      * @var string
      */
-    private $name;
+    private $name = '';
 
     /**
      * Constructor.
      *
-     * @param string $fileDir Temp file directory
+     * @param string $fileDir  Temp file directory
+     * @param string $fileName Temp file name
      */
-    public function __construct($fileDir = '')
+    public function __construct($fileDir = '', $fileName = '')
     {
         if (empty($fileDir)) {
             $fileDir = sys_get_temp_dir();
         }
 
-        $file = $this->createFile($fileDir);
+        $fileName = (string) $fileName;
+        $file = empty($fileName)
+                ? $this->createFileWithTempName($fileDir)
+                : $this->createFile($fileDir, $fileName);
 
         $this->dir = dirname($file);
         $this->name = basename($file);
@@ -116,7 +120,7 @@ class TempFile
     }
 
     /**
-     * Create file.
+     * Create a temp file.
      *
      * @param string $dir File directory
      *
@@ -124,11 +128,37 @@ class TempFile
      *
      * @throws CreateTempFileException Can't create a temp file
      */
-    private function createFile($dir)
+    private function createFileWithTempName($dir)
     {
-        $file = tempnam($dir, '');
+        $file = @tempnam($dir, '');
+        if ($file === false) {
+            throw new CreateTempFileException('Can\'t create a temp file.');
+        }
 
-        if (!file_exists($file)) {
+        return $file;
+    }
+
+    /**
+     * Create a file with the specified name.
+     *
+     * @param string $dir  File directory
+     * @param string $name File name
+     *
+     * @return string Full path to file, including its name
+     *
+     * @throws CreateTempFileException Can't create a temp file
+     */
+    private function createFile($dir, $name)
+    {
+        $file = $dir . '/' . $name;
+
+        if (@file_exists($file) === true) {
+            throw new CreateTempFileException(
+                'Can\'t create a temp file because it already exists'
+            );
+        }
+
+        if (@touch($file) === false) {
             throw new CreateTempFileException('Can\'t create a temp file.');
         }
 
@@ -144,8 +174,10 @@ class TempFile
      */
     private function destroyFile()
     {
-        if (@unlink($this->getPath()) === false) {
-            throw new DestroyTempFileException('Can\'t destroy a temp file.');
+        if (!empty($this->name)) {
+            if (@unlink($this->getPath()) === false) {
+                throw new DestroyTempFileException('Can\'t destroy a temp file.');
+            }
         }
 
         return true;

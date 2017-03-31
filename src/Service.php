@@ -12,19 +12,21 @@ class Service
     /**
      * Create new temp file.
      *
-     * @param string $content Content to write to file
+     * @param array $options Temp file options
      *
      * @return TempFile Returns new temp file
      *
      * @throws Exception Can't get a temp file
      */
-    public static function create($content = '')
+    public static function create(array $options = array())
     {
         try {
-            $file = new TempFile();
+            $fileDir = isset($options['dir']) ? (string) $options['dir'] : '';
+            $fileName = isset($options['name']) ? (string) $options['name'] : '';
+            $file = new TempFile($fileDir, $fileName);
 
-            if (!empty($content)) {
-                $file->write($content);
+            if (isset($options['content']) && !empty($options['content'])) {
+                $file->write($options['content']);
             }
         } catch (TempFileException $e) {
             throw new Exception($e->getMessage());

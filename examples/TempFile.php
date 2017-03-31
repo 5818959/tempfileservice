@@ -58,3 +58,18 @@ echo 'Create a temporary file in a non-existent directory:' . PHP_EOL;
 $tempFile = new \TempFileService\TempFile(__DIR__ . '/non_existent');
 
 dumpTempFileStat($tempFile);
+
+unset($tempFile);
+
+$fileName = 'example_' . uniqid(mt_rand(), true);
+
+echo 'Create a temporary file with the specified name (' . $fileName . '):' . PHP_EOL;
+
+// prepare
+if (file_exists(__DIR__ . '/' . $fileName)) {
+    unlink(__DIR__ . '/' . $fileName);
+}
+
+$tempFile = new \TempFileService\TempFile(__DIR__, 'testFileName');
+
+dumpTempFileStat($tempFile);
