@@ -83,11 +83,11 @@ class TempFile
      */
     public function write($data)
     {
-        if (file_put_contents($this->getPath(), $data) !== false) {
-            return true;
+        if (@file_put_contents($this->getPath(), $data) === false) {
+            throw new WriteTempFileException('Can\'t write to a temp file.');
         }
 
-        throw new WriteTempFileException('Can\'t write to a temp file.');
+        return true;
     }
 
     /**
@@ -99,12 +99,12 @@ class TempFile
      */
     public function read()
     {
-        $data = file_get_contents($this->getPath());
-        if ($data !== false) {
-            return $data;
+        $data = @file_get_contents($this->getPath());
+        if ($data === false) {
+            throw new ReadTempFileException('Can\'t read from a temp file.');
         }
 
-        throw new ReadTempFileException('Can\'t read from a temp file.');
+        return $data;
     }
 
     /**
@@ -144,10 +144,10 @@ class TempFile
      */
     private function destroyFile()
     {
-        if (unlink($this->getPath()) === true) {
-            return true;
+        if (@unlink($this->getPath()) === false) {
+            throw new DestroyTempFileException('Can\'t destroy a temp file.');
         }
 
-        throw new DestroyTempFileException('Can\'t destroy a temp file.');
+        return true;
     }
 }
